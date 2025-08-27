@@ -1,2 +1,2 @@
 # lampipi
-automated hacking web
+automated hacking database web with sqlmap
